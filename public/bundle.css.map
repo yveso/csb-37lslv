@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../App.svelte",
+    "../Button.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\n  import Button from \"./Button.svelte\";\n  import data from \"./stateData.js\";\n  import shuffle from \"./shuffle.js\";\n  import { round, points, givenAnswers } from \"./stores.js\";\n\n  let states = shuffle(data);\n  let currentRound, possibleStates, currentState, currentAnswer;\n  let scoredPoints;\n  let totalRounds = 10;\n\n  round.subscribe(value => {\n    currentRound = value;\n    if (currentRound < totalRounds) {\n      possibleStates = states.slice(currentRound * 5, currentRound * 5 + 5);\n\n      currentAnswer = possibleStates[0][\"capitol\"];\n      currentState = possibleStates[0][\"name\"];\n      possibleStates = shuffle(possibleStates);\n    }\n  });\n</script>\n\n<style>\n  main {\n    font-family: sans-serif;\n    text-align: center;\n  }\n</style>\n\n<main>\n  {#if currentRound < totalRounds}\n\t\n  <div>\n    Runde: {currentRound+1}/{totalRounds}<br/>\n    Punkte: {$points}/{totalRounds}\n  </div>\n\n\t<h1>{currentState}</h1>\n  {#each possibleStates as {capitol}}\n    <Button state={currentState} answer={capitol} isCorrect={capitol===currentAnswer} />\n  {/each}\n\t{:else}\n    <h1>Ende</h1>\n    <h2>{$points} Punkte</h2>\n    {#each $givenAnswers as {state, answer, isCorrect}}\n      <p>{isCorrect ? \"👍\" : \"👎\"} {state}: {answer} {isCorrect ? \"👍\" : \"👎\"}</p>\n    {/each}\n  {/if}\n</main>",
+    "<script>\n\timport { round, points, givenAnswers } from \"./stores.js\";\n\texport let answer;\n\texport let state;\n\texport let isCorrect;\n\tfunction handleClick() {\n\t  round.update(r => r + 1);\n\t  $givenAnswers = [\n\t    ...$givenAnswers,\n\t    { state: state, answer: answer, isCorrect: isCorrect }\n\t  ];\n\t  if (isCorrect) {\n\t    points.update(p => p + 1);\n\t  }\n\t}\n</script>\n\n<style>\n\tbutton {\n\t  background: #29262b;\n\t  color: white;\n\t  border: none;\n\t  padding: 8px 12px;\n\t  border-radius: 2px;\n\t  display: block;\n\t  margin: 10px;\n\t}\n</style>\n\n<button on:click={handleClick}>\n  {answer}\n</button>"
+  ],
+  "names": [],
+  "mappings": "AAwBE,IAAI,eAAC,CAAC,AACJ,WAAW,CAAE,UAAU,CACvB,UAAU,CAAE,MAAM,AACpB,CAAC;ACTF,MAAM,cAAC,CAAC,AACN,UAAU,CAAE,OAAO,CACnB,KAAK,CAAE,KAAK,CACZ,MAAM,CAAE,IAAI,CACZ,OAAO,CAAE,GAAG,CAAC,IAAI,CACjB,aAAa,CAAE,GAAG,CAClB,OAAO,CAAE,KAAK,CACd,MAAM,CAAE,IAAI,AACd,CAAC"
+}
